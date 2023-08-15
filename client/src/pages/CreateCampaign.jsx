@@ -52,7 +52,6 @@ const CreateCampaign = () => {
           setForm({ ...form, image: '' });
         }
       })
-      return contract;
     }
 
     else console.log("HEERE")
