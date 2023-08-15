@@ -8,7 +8,7 @@ import { ethers } from "ethers"
 const Home = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [campaigns, setCampaigns] = useState([]);
-  const { address } = useStateContext();
+  const { account } = useStateContext();
 
   const getCampaigns = async (e) => {
 
@@ -31,7 +31,7 @@ const Home = () => {
         pId: i
       }));
 
-      console.log(campaigns);
+      // console.log(campaigns);
       return parsedCampaings
     }
   }
@@ -42,11 +42,12 @@ const Home = () => {
     setCampaigns(data);
     setIsLoading(false);
     console.log(campaigns);
+
   }
 
   useEffect(()=>{
     fetchCampaigns();
-  }, [address]);
+  }, [account]);
 
   return (
     <DisplayCampaigns

@@ -8,7 +8,7 @@ const StateContext = createContext();
 
 export const StateContextProvider = ({children}) => {
     const [inputs, setInputs] = useState({});
-    const [account, setAccount] = useState()
+    const [account, setAccount] = useState('')
 
     // const publishCampaign = async (e) => {
     //     e.preventDefault()
@@ -58,7 +58,7 @@ export const StateContextProvider = ({children}) => {
         console.log("global Chain Id:", chainId);
         if (accounts.length !== 0) {
             setAccount(accounts[0]);
-            console.log("Found an authorized account:", account );
+            console.log("Found an authorized account:", accounts );
             
         } else {
             console.log("No authorized account found");
