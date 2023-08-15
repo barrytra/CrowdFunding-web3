@@ -1,17 +1,20 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
-import {ConnectWallet} from "../utils/index"
-
 import CustomButton from './CustomButton.jsx';
+import { useStateContext } from '../context/index.js';
 import { logo, menu, search, thirdweb } from '../assets';
 import { navlinks } from '../constants';
 
 const Navbar = () => {
   const navigate = useNavigate();
   const [isActive, setIsActive] = useState('dashboard');
+  const { connect, account } = useStateContext();
   const [toggleDrawer, setToggleDrawer] = useState(false);
 
-  const address = '0xabc';
+  useEffect(() => {
+    console.log("User account: ", account)
+  }, [])
+
 
   return (
     <div className="flex md:flex-row flex-col-reverse justify-between mb-[35px] gap-6">
@@ -24,7 +27,19 @@ const Navbar = () => {
       </div>
 
       <div className="sm:flex hidden flex-row justify-end gap-4">
-        <ConnectWallet/>
+        <CustomButton
+          btnType="button"
+          title={account ? 'Create a campaign' : 'Connect'}
+          styles={account ? 'bg-[#1dc071]' : 'bg-[#8c6dfd]'}
+          handleClick={() => {
+            if (account) navigate('create-campaign')
+            else {
+              connect();
+            }
+          }}
+        />
+
+
 
         <Link to="/profile">
           <div className="w-[52px] h-[52px] rounded-full bg-[#2c2f32] flex justify-center items-center cursor-pointer">
@@ -71,7 +86,17 @@ const Navbar = () => {
           </ul>
 
           <div className="flex mx-4">
-            <ConnectWallet/>
+            <CustomButton
+              btnType="button"
+              title={account ? 'Create a campaign' : 'Connect'}
+              styles={account ? 'bg-[#1dc071]' : 'bg-[#8c6dfd]'}
+              handleClick={() => {
+                if (account) navigate('create-campaign')
+                else {
+                  connect();
+                }
+              }}
+            />
           </div>
         </div>
       </div>

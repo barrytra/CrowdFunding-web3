@@ -2,16 +2,19 @@ import React, { useState } from 'react'
 import { Form, useNavigate } from 'react-router-dom'
 import { ethers } from "ethers"
 import { money } from '../assets'
+import { useStateContext } from '../context'
 import CustomButton from "../components/CustomButton"
 import FormField from '../components/FormField'
 import { checkIfImage } from "../utils"
+import { CONTRACT_ABI, CONTRACT_ADDRESS } from '../Contract';
 
 const CreateCampaign = () => {
   const navigate = useNavigate();
+  const { account } = useStateContext();
   const [isLoading, setIsLoading] = useState(false);
   const [form, setForm] = useState({
     name: '',
-    tile: '',
+    title: '',
     description: '',
     target: '',
     deadline: '',
@@ -19,11 +22,53 @@ const CreateCampaign = () => {
   });
 
   const handleFormFieldChange = (FieldName, e) => {
-    setForm({ ...form, [FieldName]: e.target.value})
+    setForm({ ...form, [FieldName]: e.target.value })
   }
 
   const handleSubmit = async (e) => {
-   
+    e.preventDefault();
+
+    const { ethereum } = window;
+    if (ethereum) {
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
+      const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+
+      checkIfImage(form.image, async (exists) => {
+        if (exists) {
+          setIsLoading(true)
+          await contract.createCampaign(
+            account,
+            form.title,
+            form.description,
+            ethers.utils.parseUnits(form.target, 18) ,
+            new Date(form.deadline).getTime(),
+            form.image
+          )
+          setIsLoading(false);
+          navigate('/');
+        } else {
+          alert('Provide valid image URL')
+          setForm({ ...form, image: '' });
+        }
+      })
+      return contract;
+    }
+
+    else console.log("HEERE")
+
+    // checkIfImage(form.image, async (exists) => {
+    //   if (exists) {
+    //     setIsLoading(true)
+    //     await createCampaign({ ...form, target: ethers.utils.parseUnits(form.target, 18) })
+    //     setIsLoading(false);
+    //     navigate('/');
+    //   } else {
+    //     alert('Provide valid image URL')
+    //     setForm({ ...form, image: '' });
+    //   }
+    // })
+
   }
 
   return (
@@ -40,7 +85,7 @@ const CreateCampaign = () => {
             PlaceHolder="Enter Your Name"
             inputType="text"
             value={form.name}
-            handleChange={(e) => handleFormFieldChange('name' , e)}
+            handleChange={(e) => handleFormFieldChange('name', e)}
           />
           <FormField
             labelName="Campaign Title *"
@@ -75,7 +120,7 @@ const CreateCampaign = () => {
           <FormField
             labelName="End Date"
             PlaceHolder="End Date"
-            inputType="text"
+            inputType="date"
             value={form.deadline}
             handleChange={(e) => handleFormFieldChange('deadline', e)}
           />
