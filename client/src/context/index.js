@@ -1,30 +1,11 @@
 import React, { useContext, createContext, useEffect, useState } from 'react';
-import { Link, useNavigate } from "react-router-dom"
-import { CONTRACT_ABI, CONTRACT_ADDRESS } from '../Contract';
-import { ethers } from "ethers";
-import CustomButton from "../components/CustomButton";
+
 
 const StateContext = createContext();
 
 export const StateContextProvider = ({children}) => {
-    const [inputs, setInputs] = useState({});
     const [account, setAccount] = useState('')
 
-    // const publishCampaign = async (e) => {
-    //     e.preventDefault()
-
-    //     const { ethereum } = window;
-    //     if (ethereum) {
-    //         const provider = new ethers.providers.Web3Provider(ethereum);
-    //         const signer = provider.getSigner();
-    //         const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
-
-    //         await contract.createCampaign(inputs.amount, 0, inputs.period, false);
-    //         return contract;
-    //     }
-
-    //     else console.log("HEERE")
-    // }
 
     const connect = async () => {
         if (typeof window.ethereum !== "undefined") {
@@ -70,24 +51,6 @@ export const StateContextProvider = ({children}) => {
         console.log(account);
     }, [])
 
-    // const publishCampaign = async (form) => {
-    //     try {
-    //         const data = await contract.createCampaign({
-    //             args: [
-    //                 account, // owner
-    //                 form.title, // title
-    //                 form.description, // description
-    //                 form.target,
-    //                 new Date(form.deadline).getTime(), // deadline,
-    //                 form.image,
-    //             ],
-    //         });
-
-    //         console.log("contract call success", data)
-    //     } catch (error) {
-    //         console.log("contract call failure", error)
-    //     }
-    // }
 
     return (
         <StateContext.Provider

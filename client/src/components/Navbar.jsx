@@ -34,7 +34,7 @@ const Navbar = () => {
           handleClick={() => {
             if (account) navigate('create-campaign')
             else {
-              connect();
+              connect()
             }
           }}
         />

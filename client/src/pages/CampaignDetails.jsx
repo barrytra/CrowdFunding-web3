@@ -8,6 +8,7 @@ import { CONTRACT_ABI, CONTRACT_ADDRESS } from '../Contract';
 import { calculateBarPercentage, daysLeft } from "../utils"
 import { thirdweb } from '../assets'
 import CountBox from '../components/CountBox'
+import Loader from '../components/Loader'
 
 const CampaignDetails = () => {
   const { state } = useLocation();
@@ -16,33 +17,7 @@ const CampaignDetails = () => {
   const [amount, setAmount] = useState("");
   const [donators, setDonators] = useState([]);
 
-  const remainingDays = state.deadline;
-
-  const getCampaigns = async (e) => {
-
-    const { ethereum } = window;
-    if (ethereum) {
-      const provider = new ethers.providers.Web3Provider(ethereum);
-      const signer = provider.getSigner();
-      const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
-
-      const campaigns = await contract.getCampaigns();
-
-      const parsedCampaings = campaigns.map((campaign, i) => ({
-        owner: campaign.owner,
-        title: campaign.title,
-        description: campaign.description,
-        target: ethers.utils.formatEther(campaign.target.toString()),
-        deadline: campaign.deadline.toNumber(),
-        amountCollected: ethers.utils.formatEther(campaign.amountCollected.toString()),
-        image: campaign.image,
-        pId: i    
-      }));
-
-      // console.log(campaigns);
-      return parsedCampaings
-    }
-  }
+  const remainingDays = daysLeft(state.deadline);
 
   const Donate = async(pId, amount) => {
     const { ethereum } = window;
@@ -104,7 +79,7 @@ const CampaignDetails = () => {
 
   return (
     <div>
-      {isLoading && "Loading..."}
+      {isLoading && <Loader/>}
 
       <div className="w-full flex md:flex-row flex-col mt-10 gap-[30px]">
         <div className="flex-1 flex-col">
@@ -149,14 +124,22 @@ const CampaignDetails = () => {
           <div>
             <h4 className="font-epilogue font-semibold text-[18px] text-white uppercase">Donators</h4>
 
-            <div>
-
+            <div className="mt-[20px] flex flex-col gap-4">
+              {donators.length > 0 ? donators.map((item, index) => (
+                <div key={`${item.donator}-${index}`} className="flex justify-between items-center gap-4">
+                  <p className="font-epilogue font-normal text-[16px] text-[#b2b3bd] leading-[26px] break-ll">{index + 1}. {item.donator}</p>
+                  <p className="font-epilogue font-normal text-[16px] text-[#808191] leading-[26px] break-ll">{item.donation}</p>
+                </div>
+              )) : (
+                <p className="font-epilogue font-normal text-[16px] text-[#808191] leading-[26px] text-justify">No donators yet. Be the first one!</p>
+              )}
             </div>
           </div>
 
         </div>
       </div>
 
+      <br/>
       <div className="flex-1">
         <h4 className="font-epilogue font-semibold text-[18px] text-white uppercase">Fund</h4>
 
